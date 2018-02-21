@@ -6,6 +6,8 @@ import com.mygdx.game.engine.Sprite;
 import com.mygdx.game.engine.math.Rect;
 import com.mygdx.game.models.bullets.Bullet;
 import com.mygdx.game.models.bullets.BulletPool;
+import com.mygdx.game.models.effects.explosions.Explosion;
+import com.mygdx.game.models.effects.explosions.ExplosionPool;
 
 public abstract class Ship extends Sprite {
 
@@ -13,6 +15,7 @@ public abstract class Ship extends Sprite {
     protected Rect worldBounds; // границы мира
     protected int hp; // жизни корабля
 
+    protected ExplosionPool explosionPool;
     protected BulletPool bulletPool;
     protected TextureRegion bulletRegion;
 
@@ -25,8 +28,9 @@ public abstract class Ship extends Sprite {
     protected float reloadInterval; // время перезарядки
     protected float reloadTimer; // таймер для стрельбы
 
-    public Ship(TextureRegion region) {
+    public Ship(TextureRegion region, ExplosionPool explosionPool) {
         super(region);
+        this.explosionPool = explosionPool;
     }
 
     public Ship() {
@@ -45,6 +49,11 @@ public abstract class Ship extends Sprite {
 
     public void setHp(int hp) {
         this.hp = hp;
+    }
+
+    public void boom() {
+        Explosion explosion = this.explosionPool.obtain();
+        explosion.set(getHeight(), pos);
     }
 
 }

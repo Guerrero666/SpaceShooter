@@ -1,4 +1,4 @@
-explosionAtlas.png
+explosionAtlas4.png
 format: RGBA8888
 filter: MipMapLinearNearest,Linear
 repeat: none
@@ -247,24 +247,3 @@ explosion
   orig: 128, 128
   offset: 0, 0
   index: 34
-explosion
-  rotate: false
-  xy: 384, 512
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: 35
-explosion
-  rotate: false
-  xy: 512, 512
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: 36
-explosion
-  rotate: false
-  xy: 640, 512
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: 37

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.models.bullets.BulletPool;
+import com.mygdx.game.models.effects.explosions.ExplosionPool;
 import com.mygdx.game.screens.GameScreen;
 
 public class Hero extends Ship {
@@ -22,8 +23,8 @@ public class Hero extends Ship {
     private Vector2 halfRigthWing;
     private TextureRegion bullet = new TextureRegion(new Texture("bullet_lite.png"));
 
-    public Hero (TextureRegion region, float startX, float startY, float speed, BulletPool bulletPool) {
-        super(region);
+    public Hero (TextureRegion region, ExplosionPool explosionPool, float startX, float startY, float speed, BulletPool bulletPool) {
+        super(region, explosionPool);
         setBottom(-0.3f);
         setHeightProportion(0.15f);
         this.endPoint = new Vector2(this.pos);
@@ -34,7 +35,7 @@ public class Hero extends Ship {
         this.rigthWing = new Vector2();
         this.halfLeftWing = new Vector2();
         this.halfRigthWing = new Vector2();
-
+        this.explosionPool = explosionPool;
         this.bulletPool = bulletPool;
         this.bulletRegion = bullet;
         this.bulletHeight = 0.02f;
@@ -42,25 +43,44 @@ public class Hero extends Ship {
         this.bulletDamage = 1;
         this.bulletEnemy = false;
         this.reloadInterval = 0.2f;
+        setHp(100);
+    }
+
+    public void setToNewGame() {
+        this.setBottom(-0.3f);
+        this.pos.x=0;
+        this.bulletHeight = 0.02f;
+        this.bulletV.set(0, 0.5f);
+        this.bulletDamage = 1;
+        this.reloadInterval = 0.2f;
+
+        hp = 100;
+        setDestroyed(false);
     }
 
     @Override
     public void update(float delta) {
-        reloadTimer += delta;
-        if (!this.pos.epsilonEquals(this.endPoint, 0.005f)) {
-            pos.mulAdd(direction.nor().scl(this.speed), delta);
-        } else {
-            pos.set(this.endPoint);
-        }
-        if (this.pos.y >= -0.3f) {
-            this.pos.y=-0.3f;
-            normalizeY=0;
-        }
-        if (this.pos.y < -0.3f) {
-            normalizeY+= 0.01f;
-        }
-        if (normalizeY>0.50f) {
-            this.pos.y+=0.001f;
+        if (!isDestroyed) {
+            if (hp <= 0) {
+                boom();
+                setDestroyed(true);
+            }
+            reloadTimer += delta;
+            if (!this.pos.epsilonEquals(this.endPoint, 0.005f)) {
+                pos.mulAdd(direction.nor().scl(this.speed), delta);
+            } else {
+                pos.set(this.endPoint);
+            }
+            if (this.pos.y >= -0.3f) {
+                this.pos.y = -0.3f;
+                normalizeY = 0;
+            }
+            if (this.pos.y < -0.3f) {
+                normalizeY += 0.01f;
+            }
+            if (normalizeY > 0.50f) {
+                this.pos.y += 0.001f;
+            }
         }
     }
 
@@ -78,6 +98,7 @@ public class Hero extends Ship {
                 halfRigthWing.epsilonEquals(obj.cpy().add(0, height), height-(height*0.4f)) ||
                 pos.epsilonEquals(obj.cpy().add(0, height+(height/3)), height)) {
             this.setEndPoint(this.pos.x, this.pos.cpy().y-0.05f);
+            this.hp-=(int) 15*height;
             return true;
         }
         return false;
